@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="res_config_settings_view_form_contacts_pdg" model="ir.ui.view">
+    <field name="name">res.config.settings.view.form.contacts.pdg</field>
+    <field name="model">res.config.settings</field>
+    <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//div[@id='contacts_settings']" position="inside">
+        <div class="app_settings_block" data-string="Contacts">
+          <setting>
+            <label for="source_line_ids" string="ÉTIQUETTES DES CONTACTS EN FONCTION DU MODULE SOURCE"/>
+            <field name="source_line_ids" widget="one2many_list">
+              <tree editable="bottom">
+                <field name="source"/>
+                <field name="source_module"/>
+              </tree>
+              <form>
+                <group>
+                  <field name="source"/>
+                  <field name="source_module"/>
+                </group>
+              </form>
+            </field>
+          </setting>
+        </div>
+      </xpath>
+    </field>
+  </record>
+</odoo>
