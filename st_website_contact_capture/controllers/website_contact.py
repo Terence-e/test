@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
 import logging
-import re
 
+from email_validator import EmailNotValidError, validate_email
 from odoo import http
 from odoo.http import request
 
 _logger = logging.getLogger(__name__)
 
-EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
-
 class WebsiteContactController(http.Controller):
 
-    @http.route(['/contactus/submit'], type='http', auth='public', website=True, methods=['POST'])
+    @http.route(['/contactus/submit'], type='http', auth='public', website=True, methods=['GET', 'POST'])
     def contactus_submit(self, **post):
         """Receive name/email/phone, create or update a res.partner, then redirect."""
+        if request.httprequest.method == 'GET':
+            return request.redirect('/contactus')
+
         name = (post.get('name') or '').strip()
         email = (post.get('email') or '').strip().lower()
         phone = (post.get('phone') or '').strip()
@@ -21,9 +22,15 @@ class WebsiteContactController(http.Controller):
         _logger.info("Contact form POST: name=%s, email=%s, phone=%s", name, email, phone)
 
         # Minimal validation
-        if not name or not email or not EMAIL_RE.match(email):
+        try:
+            email = validate_email(email).email
+        except EmailNotValidError:
             _logger.warning("Invalid payload. name='%s' email='%s'", name, email)
             # You could redirect to an error page or back with a query param
+            return request.redirect('/contactus')
+
+        if not name:
+            _logger.warning("Missing name")
             return request.redirect('/contactus')
 
         # Try your mixin first (if installed and provides the method)
