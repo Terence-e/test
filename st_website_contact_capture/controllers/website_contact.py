@@ -11,9 +11,12 @@ EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 class WebsiteContactController(http.Controller):
 
-    @http.route(['/contactus/submit'], type='http', auth='public', website=True, methods=['POST'])
+    @http.route(['/contactus/submit'], type='http', auth='public', website=True, methods=['GET', 'POST'])
     def contactus_submit(self, **post):
         """Receive name/email/phone, create or update a res.partner, then redirect."""
+        if request.httprequest.method == 'GET':
+            return request.redirect('/contactus')
+
         name = (post.get('name') or '').strip()
         email = (post.get('email') or '').strip().lower()
         phone = (post.get('phone') or '').strip()
