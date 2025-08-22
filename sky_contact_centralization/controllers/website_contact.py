@@ -6,8 +6,11 @@ _logger = logging.getLogger(__name__)
 
 class WebsiteContactController(http.Controller):
 
-    @http.route(['/contactus'], type='http', auth="public", website=True, methods=['POST'])
+    @http.route('/contactus', type='http', auth='public', website=True, methods=['GET', 'POST'])
     def website_contact_us(self, **post):
+        if request.httprequest.method == 'GET':
+            return request.render('website.contactus')
+
         # Log des données reçues
         print("===> Données POST reçues :", post)  # visible dans le terminal
         _logger.info("===> Données POST reçues : %s", post)  # visible dans odoo.log
