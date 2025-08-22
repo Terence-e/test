@@ -53,7 +53,7 @@ class ContactCentralisationMixin(models.AbstractModel):
         name = values.get('name')
 
         phone_normalized = self.normalize_phone_number(phone_raw, 'CM')
-        partner_obj = self.env['res.partner']
+        partner_obj = self.env['res.partner'].sudo()
 
         # 1. Recherche par email
         partner = partner_obj.search([('email', '=', email)], limit=1)
