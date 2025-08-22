@@ -6,7 +6,7 @@ class ContactCentralisationMixin(models.AbstractModel):
     _name = 'contact.centralisation.mixin'
     _description = 'Automatically sync records into res.partner'
 
-    def normalize_phone_number(self,phone, default_region='CM'):
+    def normalize_phone_number(self, phone, default_region='CM'):
         """
         Normalise un numéro de téléphone en format international (E.164).
         Si invalide, retourne uniquement les chiffres du numéro d'origine.
@@ -30,6 +30,7 @@ class ContactCentralisationMixin(models.AbstractModel):
         # fallback: supprimer tout ce qui n'est pas chiffre
         return ''.join(c for c in phone if c.isdigit())
 
+    @staticmethod
     def get_country_code(country_name):
         country = pycountry.countries.get(name=country_name)
         if not country:
@@ -66,9 +67,11 @@ class ContactCentralisationMixin(models.AbstractModel):
                 '|', ('phone', '!=', False), ('mobile', '!=', False)
             ])
             for p in potential_partners:
-                if (self.normalize_phone_number(p.phone, 'CM') == phone_normalized or
-                        self.normalize_phone_number(p.mobile, 'CM') == phone_normalized):
-                    return partner.id
+                if (
+                    self.normalize_phone_number(p.phone, 'CM') == phone_normalized
+                    or self.normalize_phone_number(p.mobile, 'CM') == phone_normalized
+                ):
+                    return p.id
 
         # 3. Recherche par nom uniquement si aucun email ou téléphone n'est renseigné
         partner_by_name = partner_obj.search([

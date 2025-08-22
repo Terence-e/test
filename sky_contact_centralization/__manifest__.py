@@ -11,7 +11,11 @@
     'author': 'Your Name',
     'category': 'Tools',
     'depends': ['base', 'contacts', 'event', 'mass_mailing', 'website'],  # 'contacts' ensures res.partner is present
-    'data': [],
+    'data': [
+        'security/ir.model.access.csv',
+        'views/res_config_view.xml',
+    ],
+    'external_dependencies': {'python': ['phonenumbers', 'pycountry']},
     'installable': True,
     'auto_install': False,
     'license': 'LGPL-3',
