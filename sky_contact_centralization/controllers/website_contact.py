@@ -1,44 +1,33 @@
 import logging
-
 from odoo import http
 from odoo.http import request
 
-
 _logger = logging.getLogger(__name__)
 
-
 class WebsiteContactController(http.Controller):
-    """Handle contact us form submissions and centralise contacts.
 
-    This controller collects a visitor's name, phone number and email address
-    then forwards the data to ``contact.centralisation.mixin`` which is in
-    charge of creating the contact or retrieving an existing one based on the
-    provided information.
-    """
-
-    @http.route('/contactus', type='http', auth='public', website=True, methods=['GET', 'POST'])
+    @http.route(['/contactus'], type='http', auth="public", website=True, methods=['POST'])
     def website_contact_us(self, **post):
-        if request.httprequest.method == 'GET':
-            return request.render('website.contactus')
+        # Log des données reçues
+        print("===> Données POST reçues :", post)  # visible dans le terminal
+        _logger.info("===> Données POST reçues : %s", post)  # visible dans odoo.log
 
-        name = (post.get('name') or '').strip()
-        email = (post.get('email') or '').strip()
-        phone = (post.get('phone') or '').strip()
+        # Créer un partenaire automatiquement
+        if post.get('name') and post.get('email'):
+            partner_vals = {
+                'name': post.get('name'),
+                'email': post.get('email'),
+                'phone': post.get('phone'),
+            }
+            _logger.info("===> Création/Recherche de contact avec : %s", partner_vals)
+            partner = request.env['contact.centralisation.mixin'].create_contact_if_not_exist(partner_vals)
 
-        if name or email or phone:
-            try:
-                vals = {'name': name, 'email': email, 'phone': phone}
-                partner_id = request.env['contact.centralisation.mixin'].sudo().create_contact_if_not_exist(vals)
-                _logger.info('Contact centralised with partner_id=%s', partner_id)
-            except Exception as e:
-                _logger.exception('Unable to centralise contact: %s', e)
-
-        template = request.env.ref('website_form.website_contactus_form', raise_if_not_found=False)
+        # Garder l'action d'envoi d'email existante
+        template = request.env.ref('website_form.website_contactus_form')
         if template:
-            request.env['mail.template'].sudo().browse(template.id).send_mail(
-                request.website.id,
-                force_send=True,
-            )
+            _logger.info("===> Envoi de l'email via le template ID %s", template.id)
+            request.env['mail.template'].sudo().browse(template.id).send_mail(request.website.id, force_send=True)
 
+        # Redirection vers la page de remerciement
+        _logger.info("===> Redirection vers /contactus-thank-you")
         return request.redirect('/contactus-thank-you')
-
