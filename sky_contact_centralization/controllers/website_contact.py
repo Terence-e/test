@@ -10,7 +10,7 @@ CONTACT_TEMPLATE = 'website_form.website_contactus_form'
 
 class WebsiteContactController(http.Controller):
 
-    @http.route(['/contactus'], type='http', auth="public", website=True, methods=['POST'])
+    @http.route(['/contactus'], type='http', auth="public", website=True, methods=['GET', 'POST'])
     def website_contact_us(self, **post):
         """Handle submissions from the contact us form.
 
@@ -19,6 +19,9 @@ class WebsiteContactController(http.Controller):
         partner is created or updated via the ``contact.centralisation.mixin``
         helper before the e-mail is dispatched.
         """
+        if request.httprequest.method == 'GET':
+            return request.render('website.contactus', {})
+
         _logger.info("===> Données POST reçues : %s", post)
 
         template = None
