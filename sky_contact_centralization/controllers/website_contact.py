@@ -1,4 +1,5 @@
 import logging
+import re
 
 from odoo import http
 from odoo.http import request
@@ -34,11 +35,39 @@ class WebsiteContactController(http.Controller):
 
         contact_template = request.env.ref(CONTACT_TEMPLATE, False)
         if template and contact_template and template.id == contact_template.id:
-            if post.get('name') and post.get('email'):
+            body = (
+                post.get('body')
+                or post.get('description')
+                or post.get('message')
+                or ''
+            )
+
+            name = (post.get('name') or '').strip()
+            if not name:
+                match = re.search(r"(?im)^name\s*:\s*(.+)$", body)
+                name = match.group(1).strip() if match else ''
+                if name:
+                    _logger.info("===> Nom extrait depuis le corps de l'email : %s", name)
+
+            email = (post.get('email') or '').strip()
+            if not email:
+                match = re.search(r"(?im)^email\s*:\s*([^\s]+)", body)
+                email = match.group(1).strip() if match else ''
+                if email:
+                    _logger.info("===> Email extrait depuis le corps de l'email : %s", email)
+
+            phone = (post.get('phone') or '').strip()
+            if not phone:
+                match = re.search(r"\+?\d[\d\-\.\s]{5,}\d", body)
+                phone = match.group(0).strip() if match else ''
+                if phone:
+                    _logger.info("===> Téléphone extrait depuis le corps de l'email : %s", phone)
+
+            if name and email:
                 partner_vals = {
-                    'name': post.get('name'),
-                    'email': post.get('email'),
-                    'phone': post.get('phone'),
+                    'name': name,
+                    'email': email,
+                    'phone': phone,
                 }
                 _logger.info("===> Création/Recherche de contact avec : %s", partner_vals)
                 request.env['contact.centralisation.mixin'].create_contact_if_not_exist(partner_vals)
