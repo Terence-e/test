@@ -1,4 +1,4 @@
-# __manifest__.py
+ # __manifest__.py
 
 {
     'name': 'Contact Centralisation Mixin',
