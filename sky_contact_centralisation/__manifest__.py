@@ -10,7 +10,7 @@
     """,
     'author': 'Your Name',
     'category': 'Tools',
-    'depends': ['base', 'contacts', 'event', 'mass_mailing', 'website'],  # 'contacts' ensures res.partner is present
+    'depends': ['base', 'contacts', 'crm', 'event', 'mass_mailing', 'website'],  # 'contacts' ensures res.partner is present
     'data': [
         'security/ir.model.access.csv',
         'views/res_config_view.xml',
