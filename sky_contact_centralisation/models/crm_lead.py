@@ -11,7 +11,12 @@ class CrmLead(models.Model):
         lead = super().create(vals)
 
         # Try to limit to leads that likely come from the website
-        is_websiteish = bool(lead.email_from or lead.contact_name) and bool(lead.description)
+        # The Contact Us form may not always supply a description/message.
+        # Also honour the flag Odoo's website form sets in context so we don't
+        # accidentally process unrelated leads.
+        is_websiteish = self.env.context.get("website_form_input") or bool(
+            lead.email_from or lead.contact_name
+        )
 
         if is_websiteish:
             payload = {
