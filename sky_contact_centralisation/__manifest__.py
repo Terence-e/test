@@ -15,7 +15,7 @@
         'security/ir.model.access.csv',
         'views/res_config_view.xml',
     ],
-    'external_dependencies': {'python': ['phonenumbers', 'pycountry']},
+    'external_dependencies': {'python': ['phonenumbers', 'pycountry', 'email_validator']},
     'installable': True,
     'auto_install': False,
     'license': 'LGPL-3',
