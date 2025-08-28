@@ -12,13 +12,15 @@ class EventRegistration(models.Model):
                 'name': vals.get('name'),
                 'email': vals.get('email'),
                 'phone': vals.get('phone'),
+                'source': 'evenement',  # Exemple de source, à adapter selon vos besoins
+                'source_module': self.env.ref('event.module_event').id,
             }
 
             # Appel à la fonction pour créer ou retrouver le contact
             partner = self.env['contact.centralisation.mixin'].create_contact_if_not_exist(contact_data)
 
             # Injecte le partner_id dans les valeurs
-            vals['partner_id'] = partner
+            #vals['partner_id'] = partner
 
         # Appel au create original avec le partner_id mis à jour
         return super(EventRegistration, self).create(vals)

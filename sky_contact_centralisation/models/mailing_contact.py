@@ -9,13 +9,15 @@ class MailingContact(models.Model):
         contact_data = {
             'name': vals.get('name'),
             'email': vals.get('email'),
+            'source': 'liste_de_distribution',  # Exemple de source, à adapter selon vos besoins
+            'source_module': self.env.ref('mass_mailing.module_mass_mailing').id,
         }
 
         # Appel à la fonction pour créer ou retrouver le contact
         partner = self.env['contact.centralisation.mixin'].create_contact_if_not_exist(contact_data)
 
         # Injecte le partner_id dans les valeurs
-        vals['partner_id'] = partner
+        #vals['partner_id'] = partner
 
         # Appel au create original avec le partner_id mis à jour
         return super(MailingContact, self).create(vals)
