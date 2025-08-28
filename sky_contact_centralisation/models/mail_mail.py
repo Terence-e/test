@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from email.utils import parseaddr
 from odoo import models, api
 from odoo.tools import html2plaintext
 
@@ -22,14 +21,13 @@ class MailMail(models.Model):
                 if name and phone:
                     break
 
-            email = parseaddr((m.reply_to or "").strip())[1]
+            email = m.reply_to
             if name and phone and email:
                 contact_data = {
                     "name": name,
                     "phone": phone,
                     "email": email,
-                    "source": "site_web",  # Exemple de source, à adapter selon vos besoins
-                    "source_module": self.env.ref("mail.module_mail").id,
+                    "category_id": self.env.company.source_line_ids.filtered(lambda s: s.source == "site web").mapped("category_id").ids,
                 }
                 partner = self.env["contact.centralisation.mixin"].sudo().create_contact_if_not_exist(contact_data)
         return mails

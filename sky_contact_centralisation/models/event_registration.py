@@ -11,9 +11,8 @@ class EventRegistration(models.Model):
             contact_data = {
                 'name': vals.get('name'),
                 'email': vals.get('email'),
-                'phone': vals.get('phone'),
-                'source': 'evenement',  # Exemple de source, à adapter selon vos besoins
-                'source_module': self.env.ref('event.module_event').id,
+                'phone': vals.get('phone'), 
+                'category_id': 'Evenement' in self.env.company.source_line_ids.mapped('source') and category_id or [],
             }
 
             # Appel à la fonction pour créer ou retrouver le contact

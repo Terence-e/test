@@ -9,8 +9,7 @@ class MailingContact(models.Model):
         contact_data = {
             'name': vals.get('name'),
             'email': vals.get('email'),
-            'source': 'liste_de_distribution',  # Exemple de source, à adapter selon vos besoins
-            'source_module': self.env.ref('mass_mailing.module_mass_mailing').id,
+            'category_id': self.env.company.source_line_ids.filtered(lambda s: s.source == 'Liste de distribution').mapped('category_id').ids,
         }
 
         # Appel à la fonction pour créer ou retrouver le contact
