@@ -12,7 +12,7 @@ class EventRegistration(models.Model):
                 'name': vals.get('name'),
                 'email': vals.get('email'),
                 'phone': vals.get('phone'), 
-                'category_id': 'Evenement' in self.env.company.source_line_ids.mapped('source') and category_id or [],
+                'category_id': self.env.company.source_line_ids.filtered(lambda s: s.source == 'evenement').mapped('category_id').ids,
             }
 
             # Appel à la fonction pour créer ou retrouver le contact
